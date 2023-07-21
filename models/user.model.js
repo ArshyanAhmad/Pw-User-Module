@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-import validator from 'email-validator'
+import bcrypt from 'bcrypt'
+import JWT from 'jsonwebtoken'
 
 const userSchema = new Schema({
     fullName: {
@@ -45,6 +46,29 @@ const userSchema = new Schema({
 }, {
     timestamps: true
 });
+
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        return next()
+    }
+
+    this.password = await bcrypt.hash(this.password, 10)
+})
+
+userSchema.methods = {
+    generateJWTToken: async function () {
+        return await JWT.sign(
+            { id: this._id, email: this.email, subscription: this.subscription, roll: this.roll }, process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRY }
+        )
+    },
+
+    comparePassowrd: async function (plainTextPassword) {
+        return await bcrypt.compare(plainTextPassword, this.password)
+    }
+}
+
+
 
 const userModel = model('User', userSchema);
 export default userModel;

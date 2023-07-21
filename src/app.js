@@ -4,6 +4,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import userRoutes from '../routes/userRoutes.js'
+import errorMiddleware from '../middleware/error.middleware.js';
 config()
 
 const app = express()
@@ -21,13 +22,14 @@ app.use('/ping', (req, res) => {
 })
 
 
-
 // routes of 3 modules
 app.use('/api/v1/user', userRoutes)
 
 app.use('*', (req, res) => {
     res.status(404).send('OOPS! 404 page not found')
 })
+
+app.use(errorMiddleware);
 
 export default app;
 
