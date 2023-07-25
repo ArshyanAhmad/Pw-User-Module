@@ -17,10 +17,6 @@ const userSchema = new Schema({
         trim: true,
         lowercase: true,
         unique: true,
-        match: [
-            "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,})+$",
-            'Please fill in a valid email address'
-        ]
     },
     password: {
         type: String,
@@ -67,7 +63,6 @@ userSchema.methods = {
         return await bcrypt.compare(plainTextPassword, this.password)
     }
 }
-
 
 
 const userModel = model('User', userSchema);
